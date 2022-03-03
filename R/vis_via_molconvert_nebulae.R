@@ -28,8 +28,8 @@ vis_via_molconvert <-
 molconvert_structure <-
   function(
            smiles,
-           id,
-           output = paste0(.MCn.output, "/", .MCn.results, "/tmp/structure")
+           id = "tmp",
+           output = "." 
            ){
     file = tempfile()
     system(paste0("molconvert mol \"", smiles, "\" -o ", file))
