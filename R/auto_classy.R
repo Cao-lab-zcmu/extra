@@ -1,37 +1,27 @@
 auto_classy <- 
   function(
            df,
-           store,
-           cache,
            ...
            ){
     ## classyfireR
     list <- by_group_as_list(df, ".id")
     pbapply::pblapply(list, base_auto_classy,
-                        store = store,
-                        cache = cache,
                         ...)
   }
 base_auto_classy <- 
   function(
-           df,
-           store,
-           cache
+           df
            ){
     .id <- df[1,][[".id"]]
     lapply(df[["InChIKey"]], base2_classy,
-                      .id = .id,
-                      store = store,
-                      cache = cache)
+                      .id = .id)
   }
 base2_classy <- 
   function(
            inchi,
-           .id,
-           store,
-           cache
+           .id
            ){
-    ch <- try(get(paste0(.id), envir = cache), silent = T)
+    ch <- try(read_tsv(paste0(.id)), silent = T)
     if(class(ch) == "try-error"){
       ch <- classyfireR::get_classification(inchi)
     }else{
@@ -41,7 +31,6 @@ base2_classy <-
       return()
     }else{
       ch <- classyfireR::classification(ch)
-      assign(paste0(.id), ch, envir = store)
-      assign(paste0(.id), 1, envir = cache)
+      write_tsv(ch, paste0(.id))
     }
   }

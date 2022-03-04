@@ -7,7 +7,8 @@ pretty_table <-
            filename = "tmp.html",
            path = ".",
            return_gt = T,
-           font = "Times"
+           font = "Times",
+           shorter_name = T
            ){
     title = paste0("**", Hmisc::capitalize(title), "**")
     subtitle = paste0("**", Hmisc::capitalize(subtitle), "**")
@@ -37,6 +38,10 @@ pretty_table <-
                                        rows=nrow(df))) %>%
       tab_style(style = cell_text(v_align="top"),
                 locations = cells_body(columns = everything()))
+    if(shorter_name == T){
+      t <- t %>%
+        cols_width(Name ~ px(300))
+    }
     gtsave(t, filename, path)
     if(return_gt == T)
       return(t)

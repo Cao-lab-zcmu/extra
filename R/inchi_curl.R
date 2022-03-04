@@ -1,21 +1,31 @@
 inchi_curl <- 
   function(
-           inchikey,
+           key,
            .id,
-           http = "curl -s --connect-timeout 20 --retry 100 --retry-delay 30 https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/inchikey/",
-           http_end = "/property/InChIKey/CSV > ", 
+           type = "inchikey",
+           get = "InChIkey",
            save = paste0(.id, ".csv")
            ){
-    system(paste0(http, inchikey, http_end, save))
+    http = paste0("https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/", type, "/")
+    http_end = paste0("/property/", paste(get, collapse = ","), "/CSV > ")
+    curl <- "curl -s --connect-timeout 20 --retry 100 --retry-delay 30 "
+    curl_http <- paste0(curl, http)
+    system(paste0(curl_http, key, http_end, save))
   }
 int_inchi_curl <- 
   function(
-           seq
+           seq,
+           type = "inchikey",
+           get = "InChIkey",
+           ...
            ){
     init <- dload[seq, "init"]
     .id <- dload[seq, ".id"]
     save <- paste0(.id, ".csv")
     while(class(try(read.csv(save), silent = T))[1] == "try-error"){
-      inchi_curl(init, .id)
+      inchi_curl(init, .id, 
+                 get = get,
+                 type = type,
+                 ...)
     }
   }
