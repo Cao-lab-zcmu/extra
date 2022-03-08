@@ -8,4 +8,5 @@ table_app <-
     if(prop == T)
       stat <- prop.table(stat)
     stat <- dplyr::bind_rows(stat)
+    return(stat)
   }
