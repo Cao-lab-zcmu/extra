@@ -19,7 +19,7 @@ msp_to_mgf <-
     set <- ls(envir = store)
     meta_data <- lapply(set, get_envir_df,
                                    envir = store)
-    meta_data <- data.table::rbindlist(meta_data)
+    meta_data <- data.table::rbindlist(meta_data, fill = T)
     if(is.null(write_meta_data) == F){
       write_tsv(meta_data, write_meta_data)
     }

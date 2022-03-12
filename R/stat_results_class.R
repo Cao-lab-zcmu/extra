@@ -3,7 +3,7 @@ stat_results_class <-
            df,
            standard,
            path = ".",
-           class_cutoff = 3
+           class_cutoff = 4
            ){
     ## ------------------------------------- 
     db <- dplyr::filter(.MCn.class_tree_data, hierarchy >= class_cutoff)
@@ -18,8 +18,10 @@ stat_results_class <-
     db_name <- lapply(db$name, c)
     names(db_name) <- db$id
     ## ------------------------------------- 
-    assign("envir_meta", environment(), parent.env(environment()))
-    set <- get_parent_class(standard)
+    set <- get_parent_class(standard,
+                            db_id,
+                            db_parent,
+                            db_name)
     ## ------------------------------------- 
     cat("stat:", standard, "\n")
     id_set <- df[[".id"]]
@@ -58,9 +60,10 @@ base_stat_results_class <-
 get_parent_class <- 
   function(
            class,
-           db_id = get("db_id", envir = get("envir_meta")),
-           db_parent = get("db_parent", envir = get("envir_meta")),
-           db_name = get("db_name", envir = get("envir_meta"))
+           db_id,
+           db_parent,
+           db_name,
+           this_class = F
            ){
     set <- c()
     parent <- 0
@@ -71,6 +74,10 @@ get_parent_class <-
         id <- parent
       }
       parent <- db_parent[[id]]
+    }
+    if(length(set) == 0){
+      if(this_class == T)
+        return(class)
     }
     return(set)
   }
