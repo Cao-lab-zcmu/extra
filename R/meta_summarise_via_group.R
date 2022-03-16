@@ -47,7 +47,8 @@ base_meta_summarise_via_group <-
     ## ------------------------------------- 
     cat("## ------------------ log2(FC)\n")
     fc_set <- meta_calculate_couple(df, x_row, y_row, group,
-                                    "base_meta_calculate_fc")
+                                    "base_meta_calculate_fc") %>%
+      dplyr::rename(log2.fc = expr)
     ## ------------------------------------- 
     cat("## ------------------ t.test\n")
     p_set <- meta_calculate_couple(df, x_row, y_row, group,
@@ -56,10 +57,16 @@ base_meta_summarise_via_group <-
     cat("## ------------------ FDR\n")
     q_set <- p_set %>%
       dplyr::filter(is.na(expr) == F) %>%
-      dplyr::mutate(q_value = fdrtool::fdrtool(expr, statistic = 'pvalue', plot = F)$qval)
+      dplyr::mutate(q_value = fdrtool::fdrtool(expr, statistic = 'pvalue', plot = F)$qval) %>%
+      dplyr::rename(p_value = expr)
     ## ------------------------------------- 
-    summary <- list(fc = fc_set, q_value = q_set)
-    return(summary)
+    ## gather all data
+    df <- q_set %>%
+      dplyr::select(id, p_value, q_value) %>%
+      merge(fc_set, by = "id", all.x = T, sort = F) %>%
+      dplyr::as_tibble()
+    ## ------------------------------------- 
+    return(df)
   }
 ## ---------------------------------------------------------------------- 
 meta_calculate_couple <- 
