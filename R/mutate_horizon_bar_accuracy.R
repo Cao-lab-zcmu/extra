@@ -66,7 +66,7 @@ mutate_horizon_bar_accuracy <-
                   width = 1, height = 1, alpha = 0.5, size = 1, color = "black") +
         labs(fill = "", x = "", y = "") +
         theme_minimal() +
-        scale_fill_lancet() +
+        scale_fill_rickandmorty() +
         theme(text = element_text(size = 14, face = "bold", family = "Times"),
               axis.text.x = element_blank(),
               legend.key.height = unit(1.5, "cm"),

@@ -68,6 +68,9 @@ get_parent_class <-
     set <- c()
     parent <- 0
     id <- db_id[[class]]
+    test <- try(db_parent[[id]], silent = T)
+    if(class(test) == "try-error")
+      return()
     while(is.null(parent) == F){
       if(parent != 0){
         set <- c(set, db_name[[parent]])
