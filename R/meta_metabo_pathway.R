@@ -32,7 +32,7 @@ meta_metabo_pathway <-
       dplyr::mutate(r.t = r.t * 60)
     ## ---------------------------------------------------------------------- 
     ## save to file
-    write.table(df, file = "tmp.txt", sep = "\t", quote = F, col.names = T, row.names = F)
+    write_tsv(df, file = "tmp.txt")
     ## ------------------------------------- 
     ## get the submit file
     if(only_return == T)

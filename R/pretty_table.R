@@ -10,6 +10,7 @@ pretty_table <-
            return_gt = T,
            shorter_name = T,
            spanner = F,
+           group = T,
            default = F
            ){
     ## ---------------------------------------------------------------------- 
@@ -23,7 +24,12 @@ pretty_table <-
     }
     ## ------------------------------------- 
     if(default == T){
-      t <- gt(df) %>%
+      if(group == T){
+        t <- gt(df, rowname_col = "Id", groupname_col = "Info")
+      }else{
+        t <- gt(df)
+      }
+      t <- t %>%
         opt_table_font(font=list(font)) %>%
         tab_header(title = md(title),
                    subtitle = md(subtitle)) %>%
