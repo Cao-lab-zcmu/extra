@@ -1,3 +1,17 @@
+inchikey_get_formula <- 
+  function(
+           inchikey
+           ){
+    df <- data.table::data.table(sp.id = as.character(1:length(inchikey)), inchikey = inchikey)
+    ## ------------------------------------- 
+    args <- list(df$inchikey, df$sp.id, get = c("MolecularFormula", "ExactMass", "MonoisotopicMass"))
+    do.call(mutate_inchi_curl, args)
+    from_csv <- gather_inchi_curl()
+    system("rm -r inchi_pub")
+    ## ------------------------------------- 
+    df <- merge(df, from_csv, by = "sp.id", all.x = T)
+    return(df)
+  }
 gather_inchi_curl <- 
   function(
            path = "inchi_pub"
