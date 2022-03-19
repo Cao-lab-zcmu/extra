@@ -1,3 +1,42 @@
+gather_inchi_curl <- 
+  function(
+           path = "inchi_pub"
+           ){
+    file_set <- list.files(path = path, pattern = "csv$", full.names = T)
+    list <- lapply(file_set, mutate_fread)
+    names(list) <- file_set %>% 
+      stringr::str_extract("(?<=/)[0-9]{1,100}")
+    df <- data.table::rbindlist(list, idcol = T, fill = T) %>% 
+      dplyr::rename(sp.id = .id)
+    return(df)
+  }
+mutate_fread <- 
+  function(
+           path
+           ){
+    check <- try(df <- fread(path, fill = T), silent = T)
+    if(class(check)[1] == "try-error")
+      df <- fread(path, fill = T, skip = 3)
+    if("V1" %in% colnames(df)){
+      print(path)
+      return()
+    }
+    return(df)
+  }
+mutate_inchi_curl <- 
+  function(
+           key_set,
+           .id_set,
+           dir = "inchi_pub",
+           ...
+           ){
+    if(file.exists(dir) == F)
+      dir.create(dir)
+    list <- mapply(data.table, key_set, .id_set, SIMPLIFY = F)
+    pbapply::pblapply(list, function(df, ...){
+                        setwd(dir)
+                        inchi_curl(df[[1]], df[[2]], ...)}, ..., cl = 8)
+  }
 inchi_curl <- 
   function(
            key,
