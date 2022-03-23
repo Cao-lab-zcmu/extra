@@ -1,9 +1,31 @@
+mutate_deal_with_msp_record <- 
+  function(
+           ...
+           ){
+    args <- list(...,
+                 mass_sep = " ",
+                 input = c(
+                           name = "Name",
+                           mass = "PrecursorMZ", 
+                           adduct = "Precursor_type",
+                           rt = "NA"),
+                 other = c(
+                           "Name", "Synon", "DB#", "InChIKey",
+                           "Precursor_type", "Spectrum_type", "PrecursorMZ",
+                           "Instrument_type", "Instrument", "Ion_mode",
+                           "Collision_energy", "Formula",
+                           "MW", "ExactMass", "Comments")
+    )
+    do.call(deal_with_msp_record, args)
+  }
 deal_with_msp_record <-
   function(
            string,
            id_prefix,
            cache,
            store,
+           mass_level = 2,
+           mass_sep = "\t",
            id = get("id", envir = cache),
            input = c(name = "NAME",
                      mass = "PRECURSORMZ",
@@ -36,6 +58,7 @@ deal_with_msp_record <-
       ## id update
       id = id + 1
       assign("id", id, envir = cache)
+      assign("ion", 1, envir = cache)
       ## output
       cat = 1
       p = output[["id"]]
@@ -68,23 +91,32 @@ deal_with_msp_record <-
       cat = 0
       id <- get("id", envir = cache)
       info = get(paste0(id), envir = store)
-      catapp(output[["level"]], "1\n")
-      catapp(info[["PRECURSORMZ"]], "\n")
-      catapp(output[["end"]], "\n")
-      catapp("\n")
-      ## begin mass level 2
-      catapp(output[["begin"]], "\n")
-      catapp(output[["id"]], info[[".id"]], "\n")
-      catapp(output[["mass"]], info[["PRECURSORMZ"]], "\n")
-      catapp(output[["charge"]], info[["charge"]], "\n")
+      ## ------------------------------------- 
+      if(mass_level == "all"){
+        catapp(output[["level"]], "1\n")
+        catapp(info[["PRECURSORMZ"]], "\n")
+        catapp(output[["end"]], "\n")
+        catapp("\n")
+        ## begin mass level 2
+        catapp(output[["begin"]], "\n")
+        catapp(output[["id"]], info[[".id"]], "\n")
+        catapp(output[["mass"]], info[["PRECURSORMZ"]], "\n")
+        catapp(output[["charge"]], info[["charge"]], "\n")
+      }
+      ## ------------------------------------- 
       catapp(output[["rt"]], info[["RETENTIONTIME"]], "\n")
       catapp(output[["level"]], "2\n")
     ## ---------------------------------------------------------------------- 
     }else if(grepl("^[0-9]", string)){
       cat = 2
-      p = get_name(string, sep = "\t")
-      s = get_value(string, sep = "\t")
+      p = get_name(string, sep = mass_sep)
+      s = get_value(string, sep = mass_sep)
     }else if(string == ""){
+      ion <- get("ion", envir = cache)
+      if(ion == 0){
+        return()
+      }
+      assign("ion", 0, envir = cache)
       cat = 1
       p = output[["end"]]
       s = "\n"
