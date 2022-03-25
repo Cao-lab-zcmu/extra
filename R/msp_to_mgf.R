@@ -5,7 +5,8 @@ msp_to_mgf <-
            path = "~/Downloads/msp/MoNA/",
            write_meta_data = paste0(path, "/", name, ".meta.tsv"),
            fun = "mutate_deal_with_msp_record",
-           pre_modify = T
+           pre_modify = T,
+           ...
            ){
     if(pre_modify == T){
       system(paste0("sed -i 's/\r//g' ", path, "/", name))
@@ -21,7 +22,8 @@ msp_to_mgf <-
     pbapply::pblapply(msp[[1]], ms_fun, 
                       id_prefix = id_prefix,
                       cache = cache,
-                      store = store)
+                      store = store,
+                      ...)
     set <- ls(envir = store)
     meta_data <- lapply(set, get_envir_df,
                         envir = store)

@@ -46,10 +46,12 @@ mutate_inchi_curl <-
            ){
     if(file.exists(dir) == F)
       dir.create(dir)
+    origin <- getwd()
+    setwd(dir)
     list <- mapply(data.table, key_set, .id_set, SIMPLIFY = F)
     pbapply::pblapply(list, function(df, ...){
-                        setwd(dir)
                         inchi_curl(df[[1]], df[[2]], ...)}, ..., cl = 8)
+    setwd(origin)
   }
 inchi_curl <- 
   function(

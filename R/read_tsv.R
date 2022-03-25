@@ -1,5 +1,5 @@
 read_tsv <- function(path, ...){
-  file <- data.table::fread(input=path, sep="\t", header=T, quote="", check.names=F, ...)
+  file <- data.table::fread(input=path, sep="\t", header=T, quote="\"", check.names=F, ...)
   return(file)
 }
 write_tsv <-

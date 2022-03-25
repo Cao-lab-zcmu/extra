@@ -8,6 +8,7 @@ mutate_deal_with_msp_record <-
                            name = "Name",
                            mass = "PrecursorMZ", 
                            adduct = "Precursor_type",
+                           formula = "Formula",
                            rt = "NA"),
                  other = c(
                            "Name", "Synon", "DB#", "InChIKey",
@@ -30,6 +31,7 @@ deal_with_msp_record <-
            input = c(name = "NAME",
                      mass = "PRECURSORMZ",
                      adduct = "PRECURSORTYPE",
+                     formula = "FORMULA",
                      rt = "RETENTIONTIME"),
            other = c("NAME", "PRECURSORMZ", "PRECURSORTYPE",
                      "FORMULA", "Ontology", "INCHIKEY", "SMILES",
@@ -81,6 +83,10 @@ deal_with_msp_record <-
       info = get(paste0(id), envir = store)
       info[["charge"]] = s
       assign(paste0(id), info, envir = store)
+      assign("adduct", value, envir = cache)
+    ## ---------------------------------------------------------------------- 
+    }else if(name == input[["formula"]]){
+      assign("formula", value, envir = cache)
     ## ---------------------------------------------------------------------- 
     }else if(name == input[["rt"]]){
       cat = 1
@@ -94,7 +100,23 @@ deal_with_msp_record <-
       ## ------------------------------------- 
       if(mass_level == "all"){
         catapp(output[["level"]], "1\n")
-        catapp(info[["PRECURSORMZ"]], "\n")
+        ## ------------------ 
+        catapp(info[["PRECURSORMZ"]], "100\n", sep = " ")
+        ## here, use rcdk to simulate calculate the isotope pattern
+        adduct <- get("adduct", envir = cache)
+        if(grepl("FA|ACN", adduct)){
+          adduct <- gsub("FA", "CO2H2", adduct)
+          adduct <- gsub("ACN", "C2H3N", adduct)
+        }
+        if(adduct != "[M+H-99]+"){
+          formula <- get("formula", envir = cache)
+          ## according to adduct to revise formula
+          formula <- formula_reshape_with_adduct(formula, adduct)
+          ## rcdk function
+          array <- get.isotopes.pattern(get.formula(formula))
+          apply(array, 1, cat_isotope)
+        }
+        ## ------------------ 
         catapp(output[["end"]], "\n")
         catapp("\n")
         ## begin mass level 2
@@ -146,6 +168,12 @@ catapp <-
            mgf = get("mgf", envir = get("envir_meta"))
            ){
     cat(paste(..., sep = sep), file = mgf, append = T)
+  }
+cat_isotope <- 
+  function(
+           vector
+           ){
+    catapp(vector[1], vector[2] * 100, "\n", sep = " ")
   }
 get_value <-
   function(

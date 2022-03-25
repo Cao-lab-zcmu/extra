@@ -113,3 +113,54 @@ mutate_extract <-
     ch <- stringr::str_extract(db, pattern)
     return(ch)
   }
+get_adduct_df <- 
+  function(
+           adduct
+           ){
+    com <- stringr::str_extract_all(adduct, "(?<=[\\-\\+])[A-Z&a-z&0-9]{1,}(?=[\\-\\+\\]])")
+    com <- unlist(com)
+    com <- lapply(com, element_extract)
+    ufunc <- stringr::str_extract_all(adduct, "(?<=[0-9|a-z|A-Z])\\+|-(?=[0-9|a-z|A-Z])")
+    ufunc <- unlist(ufunc)
+    names(com) <- ufunc
+    com <- data.table::rbindlist(com, idcol = T)
+    return(com)
+  }
+formula_reshape_with_adduct <- 
+  function(
+           formula,
+           adduct
+           ){
+    adduct <- get_adduct_df(adduct)
+    if(nrow(adduct) == 0)
+      return(formula)
+    df <- element_extract(formula)
+    meta <- environment()
+    df <- merge(df, adduct, by = "element", all = T)
+    df <- dplyr::mutate(df, number = ifelse(is.na(.id), number.x,
+                                            ifelse(.id == "-", number.x - number.y,
+                                                   ifelse(is.na(number.x), number.y, number.x + number.y))))
+    df <- df[, c("element", "number")]
+    df <- summarise_at(group_by(df, element), "number", sum)
+    df$number <- as.character(df$number)
+    ch <- apply(df, 1, paste0)
+    ch <- paste(ch, collapse = "")
+    return(ch)
+    # apply(adduct, 1, base_formula_reshape_with_adduct, envir = meta)
+    # return(df)
+  }
+# base_formula_reshape_with_adduct <- 
+  # function(
+  #          vector,
+  #          envir
+  #          ){
+  #   df <- get("df", envir = envir)
+  #   addn <- as.numeric(vector[3])
+  #   if(vector[2] %in% df$element){
+  #     num <- df[which(df$element == vector[2]), "number"]
+  #     df[which(df$element == vector[2]), "number"] <- ifelse(vector[1] == "+", num + addn, num - addn)
+  #   }else{
+  #     df <- add_row(df, element = vector[2], number = addn)
+  #   }
+  #   assign("df", df, envir = envir)
+  # }
