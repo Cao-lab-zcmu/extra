@@ -3,10 +3,11 @@ test_rerank_method <-
            ## nebula_name
            name,
            ## involve col of .id, standard
-           meta
+           meta,
+           top_n = 10
            ){
     # rerank method
-    test_structure <- nebula_re_rank(nebula_name = name, top_n = 5)
+    test_structure <- nebula_re_rank(nebula_name = name, top_n = top_n)
     ## gather results with reference data
     stat <- merge(test_structure[, c(".id", "inchikey2D")], meta,
                             by = ".id", all.x = T) %>%

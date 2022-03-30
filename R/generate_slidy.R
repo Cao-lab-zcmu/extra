@@ -20,6 +20,7 @@ institute: 'ZCMU'
 date: \"`r format(Sys.Date())`\"
 output:
   beamer_presentation:
+    toc: true
     df_print: tibble
     theme: 'Dresden'
     colortheme: 'beaver'
