@@ -26,6 +26,7 @@ deal_with_msp_record <-
            cache,
            store,
            mass_level = 2,
+           set_rt = NA,
            mass_sep = "\t",
            id = get("id", envir = cache),
            input = c(name = "NAME",
@@ -91,7 +92,12 @@ deal_with_msp_record <-
     }else if(name == input[["rt"]]){
       cat = 1
       p = output[["rt"]]
-      s = value
+      ## ------------------------------------- 
+      if(is.na(set_rt)){
+        s = value
+      }else{
+        s = set_rt
+      }
     ## ---------------------------------------------------------------------- 
     }else if(name == "Num Peaks"){
       cat = 0
@@ -126,6 +132,8 @@ deal_with_msp_record <-
         catapp(output[["charge"]], info[["charge"]], "\n")
       }
       ## ------------------------------------- 
+      if(is.na(set_rt) == F)
+        info[["RETENTIONTIME"]] = set_rt
       catapp(output[["rt"]], info[["RETENTIONTIME"]], "\n")
       catapp(output[["level"]], "2\n")
     ## ---------------------------------------------------------------------- 
