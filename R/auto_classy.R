@@ -65,7 +65,7 @@ base2_classy <-
            .id
            ){
     ch <- try(read_tsv(paste0(.id)), silent = T)
-    if(class(ch) == "try-error"){
+    if(class(ch)[1] == "try-error"){
       ch <- classyfireR::get_classification(inchi)
     }else{
       return()

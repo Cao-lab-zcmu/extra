@@ -57,30 +57,4 @@ base_stat_results_class <-
     }
     return(stat)
   }
-get_parent_class <- 
-  function(
-           class,
-           db_id,
-           db_parent,
-           db_name,
-           this_class = F
-           ){
-    set <- c()
-    parent <- 0
-    id <- db_id[[class]]
-    test <- try(db_parent[[id]], silent = T)
-    if(class(test) == "try-error")
-      return()
-    while(is.null(parent) == F){
-      if(parent != 0){
-        set <- c(set, db_name[[parent]])
-        id <- parent
-      }
-      parent <- db_parent[[id]]
-    }
-    if(length(set) == 0){
-      if(this_class == T)
-        return(class)
-    }
-    return(set)
-  }
+
