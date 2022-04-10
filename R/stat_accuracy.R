@@ -18,7 +18,7 @@ stat_accuracy <-
     if(return_id_stat == T)
       return(id_stat)
     table <- lapply(id_stat, table_app) %>%
-      data.table::rbindlist(idcol = T) %>%
+      data.table::rbindlist(idcol = T, fill = T) %>%
       dplyr::rename(classification = .id)
     return(table)
   }

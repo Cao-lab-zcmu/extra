@@ -1,13 +1,17 @@
 compound_align <- 
   function(
-           from,
-           to,
+           main,
+           sub,
+           main_col = "mz",
            mz_tol = 0.002,
            rt_tol = 0.1,
            mz_wight = 75,
            rt_wight = 25
            ){
-    ## 
+    list <- lapply(main[[main_col]], mz_align,
+                   df = sub, mz_tol = mz_tol)
+    if(is.na(rt_tol))
+      return()
   }
 rt_align <- 
   function(

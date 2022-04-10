@@ -45,7 +45,8 @@ deal_with_msp_record <-
                      charge = "CHARGE=",
                      rt = "RTINSECONDS=",
                      level = "MSLEVEL=",
-                     end = "END IONS")
+                     end = "END IONS"),
+           add_scans = F
            ){
     ## ---------------------------------------------------------------------- 
     ## get name and value
@@ -79,7 +80,7 @@ deal_with_msp_record <-
       cat = 1
       p = output[["charge"]]
       s = ifelse(grepl("]-|]+", value) == F, "0",
-                 ifelse(grepl("]-", value), "-1", "+1"))
+                 ifelse(grepl("]-", value), "1-", "1+"))
       id <- get("id", envir = cache)
       info = get(paste0(id), envir = store)
       info[["charge"]] = s
@@ -136,6 +137,7 @@ deal_with_msp_record <-
         info[["RETENTIONTIME"]] = set_rt
       catapp(output[["rt"]], info[["RETENTIONTIME"]], "\n")
       catapp(output[["level"]], "2\n")
+      catapp("MERGED_STATS=1 / 1 (0 removed due to low quality, 0 removed due to low cosine)\n")
     ## ---------------------------------------------------------------------- 
     }else if(grepl("^[0-9]", string)){
       cat = 2
@@ -154,6 +156,12 @@ deal_with_msp_record <-
     ## ---------------------------------------------------------------------- 
     if(cat == 1){
       catapp(p, s, "\n")
+      if(add_scans == T){
+        if(p == output[["mass"]]){
+          id <- get("id", envir = cache)
+          catapp("SCANS=", id, "\n")
+        }
+      }
     }else if(cat == 2){
       catapp(p, s, "\n", sep = " ")
     }

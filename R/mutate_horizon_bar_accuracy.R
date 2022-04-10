@@ -4,11 +4,16 @@ mutate_horizon_bar_accuracy <-
            title,
            savename,
            palette = ggsci::pal_npg()(9),
+           extra_palette = ggsci::pal_rickandmorty()(12),
            ylab = "stat ratio",
            xlab = "classification",
            fill_lab = "type",
            extra_sides_df = NULL,
-           return_p = T
+           return_p = T,
+           width = 16,
+           height = 15,
+           l_ratio = 63,
+           m_ratio = 138
            ){
     ## ------------------------------------- 
     ## get parent class
@@ -66,23 +71,23 @@ mutate_horizon_bar_accuracy <-
                   width = 1, height = 1, alpha = 0.5, size = 1, color = "black") +
         labs(fill = "", x = "", y = "") +
         theme_minimal() +
-        scale_fill_rickandmorty() +
+        scale_fill_manual(values = colorRampPalette(extra_palette)(length(unique(annotation$parent_class)))) +
         theme(text = element_text(size = 14, face = "bold", family = "Times"),
               axis.text.x = element_blank(),
               legend.key.height = unit(1.5, "cm"),
               legend.position = "left",
               panel.grid = element_blank())
       ## ------------------------------------- 
-      svg(savename, width = 16, height = 15)
+      svg(savename, width = width, height = height)
       grid.newpage()
       pushViewport( viewport(layout = grid.layout(100, 200) ))
       ## ------------------ 
       ## classification
-      print( pa1, vp = viewport(layout.pos.row = 5:94, layout.pos.col = 1:63))
+      print( pa1, vp = viewport(layout.pos.row = 5:94, layout.pos.col = 1:l_ratio))
       ## cluster accuracy
-      print( p, vp = viewport(layout.pos.row = 2:100, layout.pos.col = 65:138))
+      print( p, vp = viewport(layout.pos.row = 2:100, layout.pos.col = (l_ratio + 2):m_ratio))
       ## compounds number
-      print( ps, vp = viewport(layout.pos.row = 5:96, layout.pos.col = 142:195))
+      print( ps, vp = viewport(layout.pos.row = 5:96, layout.pos.col = (m_ratio + 4):195))
       ## ------------------ 
       dev.off()
       ## ------------------------------------- 

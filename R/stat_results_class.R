@@ -6,6 +6,8 @@ stat_results_class <-
            class_cutoff = 4
            ){
     ## ------------------------------------- 
+    if(is.data.frame(df) == F)
+      return()
     db <- dplyr::filter(.MCn.class_tree_data, hierarchy >= class_cutoff)
     ## ------------------------------------- 
     ## for name to get id
