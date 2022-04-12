@@ -13,7 +13,8 @@ mutate_horizon_bar_accuracy <-
            width = 16,
            height = 15,
            l_ratio = 63,
-           m_ratio = 138
+           m_ratio = 138,
+           extra_col_max = 500
            ){
     ## ------------------------------------- 
     ## get parent class
@@ -52,7 +53,7 @@ mutate_horizon_bar_accuracy <-
             plot.title = element_text(hjust = 0.3))
     ## ---------------------------------------------------------------------- 
     if(is.null(extra_sides_df) == F){
-      max = 500
+      max = extra_col_max
       ps <- ggplot(data = extra_sides_df) +
         geom_col(width = 0.7,
                  fill = "#709AE1FF",
