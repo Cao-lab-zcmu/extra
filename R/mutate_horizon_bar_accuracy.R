@@ -20,8 +20,7 @@ mutate_horizon_bar_accuracy <-
     ## get parent class
     parent_class <- mutate_get_parent_class(df$classification) %>%
       lapply(., end_of_vector) %>%
-      unlist() %>%
-      unname()
+      unlist(use.names = F)
     df <- dplyr::mutate(df, parent_class = ifelse(is.na(parent_class), classification, parent_class))
     ## ---------------------------------------------------------------------- 
     annotation <- df %>%
@@ -95,7 +94,7 @@ mutate_horizon_bar_accuracy <-
       return()
     }
     ## ---------------------------------------------------------------------- 
-    if(return_p == T)
+    if(return_p)
       return(p)
     ggsave(p, file = savename, width = 9, height = 15)
   }

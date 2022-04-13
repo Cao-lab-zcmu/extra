@@ -38,7 +38,7 @@ mgf_add_anno.mistree <-
       sp <- c(V1 = "SPECTYPE=CORRELATED MS")
       ## ------------------------------------- 
       ## filename
-      filename <- c(V1 = "FILENAME=test.mzXML")
+      filename <- c(V1 = "FILENAME=sample.mzML")
       ## scans
       scans <- c(V1 = "SCANS=-1")
       ## ------------------------------------- 
@@ -54,7 +54,7 @@ mgf_add_anno.mistree <-
                        return(list)
            })
       ## ------------------------------------- 
-      filename <- c(V1 = "FILENAME=test.mzXML")
+      filename <- c(V1 = "FILENAME=sample.mzML")
       df <- bind_rows(list[[1]], filename, list[[2]])
       return(df)
     }
