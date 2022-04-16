@@ -23,7 +23,11 @@ mutate2_horizon_bar_accuracy <-
            width = 18,
            height = 15,
            l_ratio = 57,
-           m_ratio = 130
+           m_ratio = 130,
+           y_cut_left = c(50, 500),
+           y_cut_right = c(900, 1300),
+           y_cut_left_breaks = c(50, seq(100, 500, by = 100)),
+           y_cut_right_breaks = c(1000, 1200)
            # extra_col_max = NA
            ){
     ## ---------------------------------------------------------------------- 
@@ -104,15 +108,19 @@ mutate2_horizon_bar_accuracy <-
                    size = 7,
                    inherit.aes = F) +
       ## the point indicate the start of noise drift
-      geom_point(data = noise_df,
-                 aes(x = classification,
-                     y = y, color = "noise"),
-                 shape = 4, size = 5) +
+      geom_segment(data = noise_df,
+                 aes(x = classification, xend = classification,
+                     y = ifelse(yend > y, y - 0.001, y + 0.001), yend = y,
+                     color = "noise"),
+                   arrow = arrow(length = unit(10, "pt")),
+                   size = 0.5, lineend = "round") +
       ## the point indicate the start of high noise drift
-      geom_point(data = h_noise_df,
-                 aes(x = classification,
-                     y = y, color = "high_noise"),
-                 shape = 4, size = 5) +
+      geom_segment(data = h_noise_df,
+                 aes(x = classification, xend = classification,
+                     y = ifelse(yend > y, y - 0.001, y + 0.001), yend = y,
+                     color = "high_noise"),
+                   arrow = arrow(length = unit(10, "pt")),
+                   size = 0.5, lineend = "round") +
       scale_color_manual(values = mutate_palette) +
       labs(title = Hmisc::capitalize(title),
            y = Hmisc::capitalize(ylab),
@@ -167,13 +175,13 @@ mutate2_horizon_bar_accuracy <-
     ## ------------------------------------- 
     ## do coord. axis cut off
     ps1 <- ps + 
-      coord_flip(ylim = c(50, 500)) +
+      coord_flip(ylim = y_cut_left) +
       geom_hline(yintercept = c(50), linetype = "dashed", size = 0.7,
                  color = "grey") +
-      scale_y_continuous(breaks = c(50, 100, 200, 300, 400, 500))
+      scale_y_continuous(breaks = y_cut_left_breaks)
     ps2 <- ps +
-      coord_flip(ylim = c(900, 1300)) +
-      scale_y_continuous(breaks = c(1000, 1200))
+      coord_flip(ylim = y_cut_right) +
+      scale_y_continuous(breaks = y_cut_right_breaks)
     ps <- ggpubr::ggarrange(ps1, ps2, ncol = 2, nrow = 1,
                             widths = c(2/3, 1/3),
                             common.legend = TRUE, legend = "right", align = "h")

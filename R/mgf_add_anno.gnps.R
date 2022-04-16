@@ -23,6 +23,7 @@ mgf_add_anno.mistree <-
            df
            ){
     mass_level <- df$V1[grepl("MSLEVEL", df$V1)]
+    id_line <- df$V1[grepl("FEATURE_ID", df$V1)]
     ## ---------------------------------------------------------------------- 
     ## process level 1
     if(mass_level == "MSLEVEL=1"){
@@ -40,7 +41,7 @@ mgf_add_anno.mistree <-
       ## filename
       filename <- c(V1 = "FILENAME=sample.mzML")
       ## scans
-      scans <- c(V1 = "SCANS=-1")
+      scans <- c(V1 = paste0("SCANS=", str_extract(id_line, "[0-9]{1,}$")))
       ## ------------------------------------- 
       ## bind rows
       df <- bind_rows(list[[1]], rt, sp, list[[2]], filename, scans, list[[3]])

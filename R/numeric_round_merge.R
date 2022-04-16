@@ -5,7 +5,8 @@ numeric_round_merge <-
            list = NULL,
            main_col = "mass",
            sub_col = "mz",
-           mz.tol = 0.002,
+           num.tol = 0.002,
+           round_factor = 1,
            noise = F
            ){
     if(is.list(list)){
@@ -14,8 +15,15 @@ numeric_round_merge <-
       main <- list[[1]]
       sub <- list[[2]]
     }
-    mutate_main <- mutate(main, .id.m = 1)
-    sub <- mutate(sub, .id.m = 1)
+    .Expr <- paste0("as.numeric(", main_col, ")")
+    ## to reduce computation, round numeric for limitation
+    mutate_main <- mutate(main, .id.m = round(eval(parse(text = .Expr)), round_factor))
+    ## ------------------------------------- 
+    .Expr <- paste0("as.numeric(", sub_col, ")")
+    sub.x <- mutate(sub, .id.m = round(eval(parse(text = .Expr)), round_factor))
+    ## escape from missing
+    sub.y <- mutate(sub.x, .id.m = .id.m + (1 * 10^-(round_factor)))
+    sub <- bind_rows(sub.x, sub.y)
     ## ------------------------------------- 
     ## expand merge
     df <- merge(mutate_main, sub, by = ".id.m", all.x = T, allow.cartesian = T)
@@ -25,7 +33,7 @@ numeric_round_merge <-
     ## eval do expression
     df <- mutate(df, .diff = eval(parse(text = .Expr)))
     ## filter
-    df <- filter(df, .diff <= mz.tol)
+    df <- filter(df, .diff <= num.tol)
     ## remove the assist col
     df <- select(df, -.id.m, -.diff)
     ## ------------------------------------- 

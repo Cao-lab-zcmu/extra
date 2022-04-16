@@ -1,5 +1,6 @@
 stat_results_class <- 
   function(
+           ## only .id is needed
            df,
            standard,
            path = ".",
