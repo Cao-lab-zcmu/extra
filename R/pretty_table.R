@@ -18,13 +18,13 @@ pretty_table <-
     subtitle = paste0("**", Hmisc::capitalize(subtitle), "**")
     colnames(df) <- Hmisc::capitalize(colnames(df))
     ## ---------------------------------------------------------------------- 
-    if(default == F){
+    if(!default){
       t <- base_gt_solid_line(df, title = title, subtitle = subtitle,
                               footnote = footnote, font = font)
     }
     ## ------------------------------------- 
-    if(default == T){
-      if(group == T){
+    if(default){
+      if(group){
         t <- gt(df, rowname_col = "Id", groupname_col = "Info")
       }else{
         t <- gt(df)
@@ -39,12 +39,12 @@ pretty_table <-
 
     }
     ## ---------------------------------------------------------------------- 
-    if(shorter_name == T){
+    if(shorter_name){
       t <- t %>%
         cols_width(Name ~ px(300))
     }
     ## ---------------------------------------------------------------------- 
-    if(spanner == T){
+    if(spanner){
       columns <- colnames(df) %>% 
         .[grepl("#", .)]
       t <- t %>%

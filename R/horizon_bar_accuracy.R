@@ -7,7 +7,7 @@ horizon_bar_accuracy <-
            ylab = "stat ratio",
            xlab = "classification",
            fill_lab = "type",
-           extra_sides_df = NULL,
+           extra_sides_df = NA,
            return_p = T
            ){
     df <- reshape2::melt(df, id.vars = "classification",
@@ -33,7 +33,7 @@ horizon_bar_accuracy <-
             text = element_text(family = "Times", size = 20, face = "bold"),
             plot.title = element_text(hjust = 0.3))
     ## ---------------------------------------------------------------------- 
-    if(is.null(extra_sides_df) == F){
+    if(!is.na(extra_sides_df)){
       max = 500
       ps <- ggplot(data = extra_sides_df) +
         geom_col(width = 0.7, aes(x = classification, y = ifelse(sum >= max, max, sum))) +

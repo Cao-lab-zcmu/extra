@@ -1,32 +1,62 @@
-png_add_margin <- 
-  function(
-           png_file,
-           width = 5000,
-           height = 5000
-           ){
-    png <- png::readPNG(png_file)
-    path <- get_path(png_file)
-    name <- get_filename(png_file)
-    png(paste0(path, "/", "ps_", name), width = width, height = height)
-    plot.new()
-    rasterImage(png, 0.05 , 0.1, 0.95, 1)
-    dev.off()
-  }
 png_gather_two <- 
   function(
            png_file1,
-           png_file2,
+           png_file2 = NA,
            width = 5000,
-           height = 3500
+           height = 3500,
+           internal = 0.06
            ){
+    ## read png1
     png1 <- png::readPNG(png_file1)
-    png2 <- png::readPNG(png_file2)
+    ratio.1 <- ncol(png1) / nrow(png1)
+    ## read png2
+    if(!is.na(png_file2)){
+      png2 <- png::readPNG(png_file2)
+      ratio.2 <- ncol(png2) / nrow(png2)
+      ## filename fix
+      fix <- "gather_"
+      ## png postion shift
+      position_shift <- "0"
+    }else{
+      ratio.2 <- NULL
+      ## filename fix
+      fix <- "ps_"
+      ## png postion shift
+      position_shift <- "(unit.width / 2 + internal / 2) / width.adjust"
+    }
+    ## ------------------ 
+    max <- max(c(ratio.1, ratio.2))
+    ## according to height, calculate needed width
+    expect.width <- height * max / (1 - internal) * 2
+    ## if width not enough
+    if(width < expect.width){
+      width <- expect.width
+      width.adjust <- 1
+    }else{
+      width.adjust <- expect.width / width
+    }
+    ## save path and savename
     path <- get_path(png_file1)
     name <- get_filename(png_file1)
-    png(paste0(path, "/", "gather_", name), width = width, height = height)
+    png(paste0(path, "/", fix, name), width = width, height = height)
     plot.new()
-    rasterImage(png1, 0, 0, 0.47, 1)
-    rasterImage(png2, 0.53, 0, 1, 1)
+    ## x, y, xend, yend
+    unit.width <- (0.5 - internal / 2) * width.adjust
+    rasterImage(png1,
+                xleft = unit.width * (1 - ratio.1 / max) +
+                  eval(parse(text = position_shift)),
+                ybottom = 0,
+                xright = unit.width + 
+                  eval(parse(text = position_shift)),
+                ytop = 1)
+    if(!is.na(png_file2)){
+      ## x, y, xend, yend
+      rasterImage(png2,
+                  xleft = unit.width + internal,
+                  ybottom = 0,
+                  xright = unit.width * (1 + ratio.2 / max) + internal, 
+                  ytop = 1)
+    }
     dev.off()
   }
 get_path <- 
