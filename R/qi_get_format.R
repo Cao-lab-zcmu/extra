@@ -33,7 +33,7 @@ qi_get_format <-
       return(dplyr::as_tibble(meta.sample))
     }
     ## ---------------------------------------------------------------------- 
-    df <- fread("mice fece.csv", skip = 2) %>% 
+    df <- fread(file, skip = 2) %>% 
       dplyr::select(grep("^Compound$|m/z|Retention time", colnames(.)),
                     meta.group$col[1]:meta.group$col_end[nrow(meta.group)])
     return(dplyr::as_tibble(df))
