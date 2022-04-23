@@ -4,7 +4,7 @@ pretty_table <-
            title = "compounds summary",
            subtitle = "LC-MS",
            footnote = "Compounds summary",
-           font = "Times",
+           font = "Times New Roman",
            filename = "tmp.html",
            path = ".",
            return_gt = T,
@@ -25,7 +25,7 @@ pretty_table <-
     ## ------------------------------------- 
     if(default){
       if(group){
-        t <- gt(df, rowname_col = "Id", groupname_col = "Info")
+        t <- gt(df, groupname_col = "Info")
       }else{
         t <- gt(df)
       }
@@ -36,7 +36,6 @@ pretty_table <-
         opt_align_table_header(align = "left") %>%
         tab_footnote(footnote = footnote,
                      locations = cells_title(groups = c("title")))
-
     }
     ## ---------------------------------------------------------------------- 
     if(shorter_name){
@@ -115,30 +114,57 @@ base_gt_solid_line <-
            footnote,
            font
            ){
-    t <- gt(df) %>%
+    ## ------------------------------------- 
+    ## final group, the end row names
+    tmp <- dplyr::mutate(df, row = 1:nrow(df))
+    end_row <- dplyr::filter(tmp, Info == tail(unique(tmp$Info), n = 1))$row %>% 
+      tail(n = 1)
+    ## ------------------------------------- 
+    t <- gt(df, groupname_col = "Info") %>%
+      ## ------------------------------------- 
+      ## set font
       opt_table_font(font=list(font)) %>%
+      ## ------------------------------------- 
+      ## set title or footnote etc., annotation
       tab_header(title = md(title),
                  subtitle = md(subtitle)) %>%
-      opt_align_table_header(align = "left") %>%
       tab_footnote(footnote = footnote,
                    locations = cells_title(groups = c("title"))) %>%
-      opt_table_lines(extent = c("none")) %>%
+      ## ------------------------------------- 
+      ## set alignment
+      opt_align_table_header(align = "left") %>%
       cols_align(align = "left",
                  columns = everything()) %>%
+      tab_style(style = cell_text(v_align = "top"),
+                locations = cells_column_labels(columns = everything())) %>%
+      tab_style(style = cell_text(v_align = "top"),
+                locations = cells_body(columns = everything())) %>%
+      ## ------------------------------------- 
+      ## set lines
+      opt_table_lines(extent = c("none")) %>%
+      ## head lines
       tab_style(style = cell_borders(sides = c("top", "bottom"),
                                      color = "black",
                                      weight = px(1.5),
                                      style = "solid"),
                 locations = cells_column_labels()) %>%
-      tab_style(style = cell_text(v_align="top"),
-                locations = cells_column_labels(columns = everything())) %>%
+      ## end lines
       tab_style(style = cell_borders(sides = c("bottom"),
                                      color = "black",
                                      weight = px(1.5),
                                      style = "solid"),
-                locations = cells_body(columns=everything(),
-                                       rows=nrow(df))) %>%
-      tab_style(style = cell_text(v_align="top"),
-                locations = cells_body(columns = everything()))
+                locations = cells_body(columns = everything(),
+                                       rows = eval(parse(text = end_row)))) %>% 
+      ## ------------------------------------- 
+      ## set group rows
+      tab_style(style = cell_text(align = "center",
+                                  weight = "bold"),
+                locations = cells_row_groups(groups = everything())) %>% 
+      ## set lines
+      tab_style(style = cell_borders(sides = c("top", "bottom"),
+                                     color = "grey",
+                                     weight = px(1),
+                                     style = "solid"),
+                locations = cells_row_groups(groups = everything()))
     return(t)
   }
