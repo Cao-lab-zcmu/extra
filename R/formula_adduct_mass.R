@@ -2,6 +2,7 @@ formula_adduct_mass <-
   function(
            formula = NA,
            compound_weight = NA,
+           get_formula_weight = F,
            iontype = "neg",
            db_adduct = "[M+H]+,[M+K]+,[M+Na]+,[M+H-H2O]+,[M+H-H4O2]+,[M+NH4]+,[M-H]-,[M+Cl]-,[M-H2O-H]-,[M+Br]-,[M+FA-H]-,[M+ACN-H]-"
            ){
@@ -43,6 +44,9 @@ formula_adduct_mass <-
       compound_weight <- lapply(formula, element_extract) %>% 
         lapply(element_calculate, welement = welement) %>% 
         unlist()
+    }
+    if(get_formula_weight){
+      return(compound_weight)
     }
     list <- lapply(compound_weight, function(x, plus){x + plus}, adduct_mass) %>% 
       lapply(function(mass, adduct){data.table::data.table(adduct = adduct, mass = mass)},
@@ -129,7 +133,8 @@ get_adduct_df <-
 formula_reshape_with_adduct <- 
   function(
            formula,
-           adduct
+           adduct,
+           order = F
            ){
     adduct <- get_adduct_df(adduct)
     if(nrow(adduct) == 0)
@@ -142,6 +147,11 @@ formula_reshape_with_adduct <-
                                                    ifelse(is.na(number.x), number.y, number.x + number.y))))
     df <- df[, c("element", "number")]
     df <- summarise_at(group_by(df, element), "number", sum)
+    if(order){
+      levels <- c("C", "H", "Cl", "F", "I", "K", "N", "Na", "O", "P", "S")
+      levels <- levels[levels %in% df$element]
+      df <- arrange(df, factor(element, levels = levels))
+    }
     df$number <- as.character(df$number)
     ch <- apply(df, 1, paste0)
     ch <- paste(ch, collapse = "")

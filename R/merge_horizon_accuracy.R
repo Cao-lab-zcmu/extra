@@ -9,6 +9,7 @@ merge_horizon_accuracy <-
            fill_lab = "type",
            return_p = T
            ){
+    list.name <- names(list)
     list <- lapply(list, reshape2::melt,
                    id.vars = "classification",
                    variable.name = "type",
@@ -25,7 +26,11 @@ merge_horizon_accuracy <-
                 aes(x = classification,
                     y = value,
                     color = .id)) +
-      geom_segment(data = line_df, aes(x = classification, xend = classification, y = top1, yend = top50),
+      geom_segment(data = line_df,
+                   aes(x = classification,
+                       xend = classification,
+                       y = eval(parse(text = paste0("`", list.name[1], "`"))),
+                       yend = eval(parse(text = paste0("`", list.name[2], "`")))),
                    color = "black") +
       geom_point(size = 5,
                  position = "identity") +
@@ -33,7 +38,7 @@ merge_horizon_accuracy <-
       labs(title = Hmisc::capitalize(title),
            y = Hmisc::capitalize(ylab),
            x = Hmisc::capitalize(xlab),
-           fill = Hmisc::capitalize(fill_lab)) +
+           color = Hmisc::capitalize(fill_lab)) +
       coord_flip() +
       theme(legend.position = "bottom",
             text = element_text(family = "Times", size = 20, face = "bold"),

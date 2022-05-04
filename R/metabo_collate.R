@@ -4,9 +4,9 @@ metabo_collate <-
            ){
     ## ----------------------------------------------------------------------
     ## read file
-    compound <- list.files(path, pattern = "compound_all.csv$", full.names = T) %>% 
+    compound <- list.files(path, pattern = "compound_all.{0,5}.csv$", full.names = T) %>% 
       data.table::fread()
-    pathway <- list.files(path, pattern = "pathway_enrichment.csv$", full.names = T) %>% 
+    pathway <- list.files(path, pattern = "pathway_enrichment.{0,5}.csv$", full.names = T) %>% 
       data.table::fread()
     ## ------------------------------------- 
     pathway <- metabo_collate_pathway(pathway)
