@@ -4,12 +4,17 @@ show_palette <-
            width = 2,
            height = 10,
            font_size = 5,
-           ylab = "Re-ID"
+           ylab = "Re-ID",
+           re_order = T
            ){
-    df <- data.table::data.table(name = names(palette), color = unname(palette))
+    df <- data.table::data.table(name = names(palette), color = unname(palette)) %>% 
+      dplyr::mutate(name = stringr::str_wrap(name, width = 25))
+    if(!re_order){
+      df <- dplyr::mutate(df, name = factor(name, levels = name))
+    }
     ## ---------------------------------------------------------------------- 
     p <- ggplot(df) +
-      geom_tile(aes(x = "color", y = stringr::str_wrap(name, width = 25),
+      geom_tile(aes(x = "color", y = name,
                     fill = name),
                 width = 1, height = 1, size = 1, color = "black") +
       labs(x = "Color", y = ylab) +

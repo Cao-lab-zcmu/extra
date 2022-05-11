@@ -20,7 +20,7 @@ pretty_table <-
     ## ---------------------------------------------------------------------- 
     if(!default){
       t <- base_gt_solid_line(df, title = title, subtitle = subtitle,
-                              footnote = footnote, font = font)
+                              footnote = footnote, font = font, group = group)
     }
     ## ------------------------------------- 
     if(default){
@@ -112,15 +112,21 @@ base_gt_solid_line <-
            title,
            subtitle,
            footnote,
-           font
+           font,
+           group
            ){
     ## ------------------------------------- 
-    ## final group, the end row names
-    tmp <- dplyr::mutate(df, row = 1:nrow(df))
-    end_row <- dplyr::filter(tmp, Info == tail(unique(tmp$Info), n = 1))$row %>% 
-      tail(n = 1)
-    ## ------------------------------------- 
-    t <- gt(df, groupname_col = "Info") %>%
+    if(group){
+      ## final group, the end row names
+      tmp <- dplyr::mutate(df, row = 1:nrow(df))
+      end_row <- dplyr::filter(tmp, Info == tail(unique(tmp$Info), n = 1))$row %>% 
+        tail(n = 1)
+      t <- gt(df, groupname_col = "Info")
+    }else{
+      t <- gt(df)
+      end_row <- nrow(df)
+    }
+    t <- t %>%
       ## ------------------------------------- 
       ## set font
       opt_table_font(font=list(font)) %>%

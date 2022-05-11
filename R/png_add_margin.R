@@ -73,3 +73,14 @@ get_filename <-
     filename <- stringr::str_extract(path_str, "(?<=/)[^/]*$")
     return(filename)
   }
+## ---------------------------------------------------------------------- 
+png_to_pdf <- 
+  function(
+           file
+           ){
+    file.pdf <- gsub("\\.png", "\\.pdf", file)
+    pdf(file = file.pdf)
+    png <- EBImage::readImage(file)
+    EBImage::display(png, method = "raster", all = T)
+    dev.off()
+  }

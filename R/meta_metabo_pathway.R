@@ -1,8 +1,9 @@
 meta_metabo_pathway <- 
   function(
-           export,
-           mz_rt,
-           p_col,
+           export = NA,
+           mz_rt = NA,
+           p_col = NA,
+           extra_entity = NA,
            only_return = F,
            ## from name involves the character rename into the columns
            key = c("mz", "q_value", "log2.fc", "rt"),
@@ -14,10 +15,14 @@ meta_metabo_pathway <-
            db_pathway = "hsa_mfn"
            ){
     ## ---------------------------------------------------------------------- 
-    df_mz_rt <- mz_rt %>% 
-      dplyr::filter(id %in% export$id) %>% 
-      merge(export[, c("id", p_col)], all.x = T, by = "id") %>% 
-      dplyr::as_tibble()
+    if(is.data.frame(extra_entity)){
+      df_mz_rt <- extra_entity
+    }else{
+      df_mz_rt <- mz_rt %>% 
+        dplyr::filter(id %in% export$id) %>% 
+        merge(export[, c("id", p_col)], all.x = T, by = "id") %>% 
+        dplyr::as_tibble()
+    }
     ## ---------------------------------------------------------------------- 
     ## note that this step is setting up to auto find and rename
     colnames(df_mz_rt) <- colnames(df_mz_rt) %>% 
