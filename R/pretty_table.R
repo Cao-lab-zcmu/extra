@@ -74,7 +74,7 @@ base_mapply_rename_col <-
            envir,
            names = get("names", envir = envir)
            ){
-    names <- gsub(mutate, replace, names)
+    names <- gsub(mutate, replace, names, perl = T)
     assign("names", names, envir = envir)
   }
 ## ---------------------------------------------------------------------- 

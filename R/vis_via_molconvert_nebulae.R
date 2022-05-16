@@ -1,10 +1,12 @@
 vis_via_molconvert_nebulae <-
   function(
-           nebula_name
+           nebula_name,
+           nebula_index = .MCn.nebula_index,
+           output
            ){
-    df <- dplyr::filter(.MCn.nebula_index, name == nebula_name)
+    df <- dplyr::filter(nebula_index, name == nebula_name)
     stru <- dplyr::filter(.MCn.structure_set, .id %in% df$".id")
-    vis_via_molconvert(stru$smiles, stru$".id")
+    vis_via_molconvert(stru$smiles, stru$".id", output)
     return("Done")
   }
 vis_via_molconvert <-
