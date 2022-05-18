@@ -7,7 +7,7 @@ mutate2_horizon_bar_accuracy <-
            savename,
            ylab = "stat ratio",
            xlab = "classification",
-           fill_lab = "type",
+           fill_lab = "Type",
            ## ------------------------------------- 
            palette = ggsci::pal_npg()(9),
            mutate_palette = c("true" = palette[3],
@@ -121,11 +121,12 @@ mutate2_horizon_bar_accuracy <-
                      color = "high_noise"),
                    arrow = arrow(length = unit(10, "pt")),
                    size = 0.5, lineend = "round") +
-      scale_color_manual(values = mutate_palette) +
+      scale_color_manual(values = mutate_palette,
+                         labels = c(sum = "sum", noise = "middle noise", high_noise = "high noise")) +
       labs(title = Hmisc::capitalize(title),
            y = Hmisc::capitalize(ylab),
            x = Hmisc::capitalize(xlab),
-           fill = Hmisc::capitalize(fill_lab)) +
+           color = Hmisc::capitalize(fill_lab)) +
       coord_flip() +
       theme(legend.position = "bottom",
             axis.text.y = element_blank(),
@@ -167,8 +168,9 @@ mutate2_horizon_bar_accuracy <-
                          color = "high_noise"),
                      size = 7
                      ) +
-        scale_color_manual(values = extra_palette) +
-        labs(x = NULL, y = NULL, color = NULL) +
+        scale_color_manual(values = extra_palette,
+                           labels = c(sum = "sum", noise = "middle noise", high_noise = "high noise")) +
+        labs(x = NULL, y = NULL, color = "Type") +
         theme(axis.text.y = element_blank(),
               axis.ticks = element_blank(),
               text = element_text(family = "Times", size = 20, face = "bold"))

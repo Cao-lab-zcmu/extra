@@ -26,7 +26,6 @@ show_palette <-
       theme_minimal() +
       theme(text = element_text(size = font_size, face = "bold", family = "Times"),
             title = element_text(hjust = -2),
-            plot.background = element_rect(fill = 'white', colour = "white"),
             axis.text.x = element_blank(),
             panel.grid = element_blank())
     ggsave(p, file = "tmp.svg", width = width, height = height)
@@ -60,9 +59,9 @@ mutate_show_palette <-
       labs(x = xlab, y = ylab, fill = fill_lab) +
       ggtitle(title) +
       scale_fill_manual(values = palette) +
+      theme_minimal() +
       theme(text = element_text(size = font_size, face = "bold", family = "Times"),
             title = element_text(hjust = -2),
-            plot.background = element_rect(fill = 'white', colour = "white"),
             axis.text.x = element_blank(),
             legend.position = legend.position,
             legend.key.height = legend.key.height,
