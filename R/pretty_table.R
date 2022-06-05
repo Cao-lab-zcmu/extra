@@ -29,26 +29,22 @@ pretty_table <-
       }else{
         t <- gt(df)
       }
-      t <- t %>%
-        opt_table_font(font=list(font)) %>%
-        tab_header(title = md(title),
-                   subtitle = md(subtitle)) %>%
-        opt_align_table_header(align = "left") %>%
-        tab_footnote(footnote = footnote,
-                     locations = cells_title(groups = c("title")))
+      t <- opt_table_font(t, font=list(font))
+      t <- tab_header(t, title = md(title), subtitle = md(subtitle))
+      t <- opt_align_table_header(t, align = "left")
+      t <- tab_footnote(t, footnote = footnote,
+                        locations = cells_title(groups = c("title")))
     }
     ## ---------------------------------------------------------------------- 
     if(shorter_name){
-      t <- t %>%
-        cols_width(Name ~ px(300))
+      t <- cols_width(t, Name ~ px(300))
     }
     ## ---------------------------------------------------------------------- 
     if(spanner){
       columns <- colnames(df) %>% 
         .[grepl("#", .)]
-      t <- t %>%
-        tab_spanner_delim(columns = columns,
-                          delim = "#")
+      t <- tab_spanner_delim(t, columns = columns,
+                             delim = "#")
     }
     ## ---------------------------------------------------------------------- 
     gtsave(t, filename, path)
@@ -60,11 +56,12 @@ mapply_rename_col <-
   function(
            mutate_set,
            replace_set,
-           names
+           names,
+           fixed = F
            ){
     envir <- environment()
     mapply(base_mapply_rename_col, mutate_set, replace_set,
-           MoreArgs = list(envir = envir))
+           MoreArgs = list(envir = envir, fixed = fixed))
     return(names)
   }
 base_mapply_rename_col <- 
@@ -72,9 +69,10 @@ base_mapply_rename_col <-
            mutate,
            replace,
            envir,
+           fixed = F,
            names = get("names", envir = envir)
            ){
-    names <- gsub(mutate, replace, names, perl = T)
+    names <- gsub(mutate, replace, names, perl = T, fixed = fixed)
     assign("names", names, envir = envir)
   }
 ## ---------------------------------------------------------------------- 
@@ -126,51 +124,50 @@ base_gt_solid_line <-
       t <- gt(df)
       end_row <- nrow(df)
     }
-    t <- t %>%
-      ## ------------------------------------- 
-      ## set font
-      opt_table_font(font=list(font)) %>%
-      ## ------------------------------------- 
-      ## set title or footnote etc., annotation
-      tab_header(title = md(title),
-                 subtitle = md(subtitle)) %>%
-      tab_footnote(footnote = footnote,
-                   locations = cells_title(groups = c("title"))) %>%
-      ## ------------------------------------- 
-      ## set alignment
-      opt_align_table_header(align = "left") %>%
-      cols_align(align = "left",
-                 columns = everything()) %>%
-      tab_style(style = cell_text(v_align = "top"),
-                locations = cells_column_labels(columns = everything())) %>%
-      tab_style(style = cell_text(v_align = "top"),
-                locations = cells_body(columns = everything())) %>%
-      ## ------------------------------------- 
-      ## set lines
-      opt_table_lines(extent = c("none")) %>%
-      ## head lines
-      tab_style(style = cell_borders(sides = c("top", "bottom"),
-                                     color = "black",
-                                     weight = px(1.5),
-                                     style = "solid"),
-                locations = cells_column_labels()) %>%
-      ## end lines
-      tab_style(style = cell_borders(sides = c("bottom"),
-                                     color = "black",
-                                     weight = px(1.5),
-                                     style = "solid"),
-                locations = cells_body(columns = everything(),
-                                       rows = eval(parse(text = end_row)))) %>% 
-      ## ------------------------------------- 
-      ## set group rows
-      tab_style(style = cell_text(align = "center",
-                                  weight = "bold"),
-                locations = cells_row_groups(groups = everything())) %>% 
-      ## set lines
-      tab_style(style = cell_borders(sides = c("top", "bottom"),
-                                     color = "grey",
-                                     weight = px(1),
-                                     style = "solid"),
-                locations = cells_row_groups(groups = everything()))
+    ## ------------------------------------- 
+    ## set font
+    t <- opt_table_font(t, font=list(font))
+    ## ------------------------------------- 
+    ## set title or footnote etc., annotation
+    t <- tab_header(t, title = md(title),
+                    subtitle = md(subtitle))
+    t <- tab_footnote(t, footnote = footnote,
+                      locations = cells_title(groups = c("title")))
+    ## ------------------------------------- 
+    ## set alignment
+    t <- opt_align_table_header(t, align = "left")
+    t <- cols_align(t, align = "left",
+                    columns = everything()) 
+    t <- tab_style(t, style = cell_text(v_align = "top"),
+                   locations = cells_column_labels(columns = everything())) 
+    # t <- tab_style(t, style = cell_text(v_align = "top"),
+                   # locations = cells_body(columns = everything())) 
+    ## ------------------------------------- 
+    ## set lines
+    t <- opt_table_lines(t, extent = c("none"))
+    ## head lines
+    t <- tab_style(t, style = cell_borders(sides = c("top", "bottom"),
+                                           color = "black",
+                                           weight = px(1.5),
+                                           style = "solid"),
+                   locations = cells_column_labels()) 
+    ## end lines
+    t <- tab_style(t, style = cell_borders(sides = c("bottom"),
+                                           color = "black",
+                                           weight = px(1.5),
+                                           style = "solid"),
+                   locations = cells_body(columns = everything(),
+                                          rows = eval(parse(text = end_row))))
+    ## ------------------------------------- 
+    ## set group rows
+    t <- tab_style(t, style = cell_text(align = "center",
+                                        weight = "bold"),
+                   locations = cells_row_groups(groups = everything()))
+    ## set lines
+    t <- tab_style(t, style = cell_borders(sides = c("top", "bottom"),
+                                           color = "grey",
+                                           weight = px(1),
+                                           style = "solid"),
+                   locations = cells_row_groups(groups = everything()))
     return(t)
   }
