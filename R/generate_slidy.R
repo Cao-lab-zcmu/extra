@@ -1,7 +1,7 @@
 generate_slidy <- 
   function(
            name,
-           path = "~/Documents/zcmu_reports"
+           path = "/mnt/data/wizard/Documents/zcmu_reports"
            ){
     ## ------------------------------------- 
     file <- paste0(path, "/", name, ".Rmd")
@@ -32,7 +32,7 @@ return(main)
 make_slidy <- 
   function(
            name,
-           path = "~/Documents/zcmu_reports"
+           path = "/mnt/data/wizard/Documents/zcmu_reports"
            ){
     file <- paste0(path, "/", name, ".Rmd")
     rmarkdown::render(file)

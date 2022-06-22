@@ -72,7 +72,7 @@ base_mapply_rename_col <-
            fixed = F,
            names = get("names", envir = envir)
            ){
-    names <- gsub(mutate, replace, names, perl = T, fixed = fixed)
+    names <- gsub(mutate, replace, names, perl = ifelse(fixed, F, T), fixed = fixed)
     assign("names", names, envir = envir)
   }
 ## ---------------------------------------------------------------------- 
